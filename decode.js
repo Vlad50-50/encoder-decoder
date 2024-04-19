@@ -1,12 +1,12 @@
 const Jimp = require('jimp');
+const fs = require('fs');
 const readline = require('readline').createInterface({
     input: process.stdin,
     output: process.stdout
 });
 
 const imagePath = 'out.png';
-
-// Функция для декодирования массива символов из изображения
+const outputFilePath = 'decodedText.txt';
 async function decodeCharArrayFromImage(imagePath, numChars, pixelInterval) {
     const image = await Jimp.read(imagePath);
     const { width, height } = image.bitmap;
@@ -21,7 +21,7 @@ async function decodeCharArrayFromImage(imagePath, numChars, pixelInterval) {
         if (y < height) {
             const pixelColor = image.getPixelColor(x, y);
             const alphaChannel = pixelColor & 0xFF;
-            const segment = alphaChannel & 0x03; // Берем только 2 последних бита
+            const segment = alphaChannel & 0x03; 
             charCode |= segment << (6 - segmentIndex * 2);
 
             segmentIndex++;
@@ -44,6 +44,8 @@ readline.question('Введите длину зашифрованного соо
         decodeCharArrayFromImage(imagePath, parseInt(numChars), parseInt(pixelInterval))
             .then(decodedText => {
                 console.log('Декодированный текст из изображения:', decodedText);
+                fs.writeFileSync(outputFilePath, decodedText);
+                console.log(`Декодированный текст был записан в файл ${outputFilePath}`);
                 readline.close();
             });
     });

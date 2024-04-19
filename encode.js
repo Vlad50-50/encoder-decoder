@@ -1,4 +1,5 @@
 const Jimp = require('jimp');
+const fs = require('fs');
 const readline = require('readline').createInterface({
     input: process.stdin,
     output: process.stdout
@@ -6,6 +7,7 @@ const readline = require('readline').createInterface({
 
 const imagePath = 'inp.png';
 const outputImagePath = 'out.png';
+const outputFilePath = 'encodedData.txt';
 
 // Функция для шифрования массива символов в изображении
 async function encodeCharArrayInImage(imagePath, charArray, outputImagePath, pixelInterval) {
@@ -48,6 +50,12 @@ readline.question('Введите текст для шифрования: ', inp
         encodeCharArrayInImage(imagePath, charArray, outputImagePath, parseInt(pixelInterval))
             .then(() => {
                 console.log('Текст был закодирован в изображении.');
+                const encodedData = {
+                    textLength: charArray.length,
+                    pixelInterval: parseInt(pixelInterval)
+                };
+                fs.writeFileSync(outputFilePath, JSON.stringify(encodedData));
+                console.log(`Данные о шифровании были записаны в файл ${outputFilePath}`);
                 readline.close();
             });
     });
